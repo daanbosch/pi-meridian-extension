@@ -17,10 +17,12 @@ const DEFAULT_CONTEXT_WINDOW = 200000;
 const EXTENDED_CONTEXT_WINDOW = 1000000;
 const SONNET_MAX_TOKENS = 64000;
 const FABLE_MAX_TOKENS = 128000;
+const FABLE_5_1_MAX_TOKENS = 64000;
 const OPUS_MAX_TOKENS = 32768;
 const HAIKU_MAX_TOKENS = 16384;
 const SONNET_COST = { input: 3, output: 15, cacheRead: 0.3, cacheWrite: 3.75 } as const;
 const FABLE_COST = { input: 10, output: 50, cacheRead: 1, cacheWrite: 12.5 } as const;
+const FABLE_5_1_COST = { input: 10, output: 50, cacheRead: 0.25, cacheWrite: 12.5 } as const;
 const OPUS_COST = { input: 15, output: 75, cacheRead: 1.5, cacheWrite: 18.75 } as const;
 const HAIKU_COST = { input: 0.8, output: 4, cacheRead: 0.08, cacheWrite: 1 } as const;
 
@@ -404,6 +406,17 @@ export default function (pi: ExtensionAPI) {
     headers: providerHeaders,
     models: [
       {
+        id: "claude-fable-5-1",
+        name: "Claude Fable 5.1 (Meridian)",
+        reasoning: true,
+        input: DEFAULT_MODEL_INPUT,
+        cost: FABLE_5_1_COST,
+        contextWindow: EXTENDED_CONTEXT_WINDOW,
+        maxTokens: FABLE_5_1_MAX_TOKENS,
+        thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+        compat: { forceAdaptiveThinking: true, supportsStrictTools: true },
+      },
+      {
         id: "claude-fable-5",
         name: "Claude Fable 5 (Meridian)",
         reasoning: true,
@@ -467,7 +480,7 @@ export default function (pi: ExtensionAPI) {
     // Fable accepts pi's full system prompt and orchestration contract. The
     // compact rewrite is only needed for Claude Code subscription models that
     // otherwise trigger Extra Usage through Meridian.
-    if (ctx.model.id === "claude-fable-5") return;
+    if (ctx.model.id === "claude-fable-5" || ctx.model.id === "claude-fable-5-1") return;
 
     if (!event.payload || typeof event.payload !== "object") {
       return event.payload;

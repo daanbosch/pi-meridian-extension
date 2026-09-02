@@ -76,6 +76,7 @@ test('provider model catalog matches current upstream Meridian models', async ()
   const provider = pi.providers.get('meridian');
 
   assert.deepEqual(provider.models.map((model) => model.id), [
+    'claude-fable-5-1',
     'claude-fable-5',
     'claude-sonnet-4-6',
     'claude-opus-4-6',
@@ -83,6 +84,22 @@ test('provider model catalog matches current upstream Meridian models', async ()
     'claude-opus-4-8',
     'claude-haiku-4-5',
   ]);
+
+  const fable51 = provider.models.find((model) => model.id === 'claude-fable-5-1');
+  assert.equal(fable51.name, 'Claude Fable 5.1 (Meridian)');
+  assert.equal(fable51.contextWindow, 1_000_000);
+  assert.equal(fable51.maxTokens, 64000);
+  assert.deepEqual(fable51.cost, {
+    input: 10,
+    output: 50,
+    cacheRead: 0.25,
+    cacheWrite: 12.5,
+  });
+  assert.deepEqual(fable51.thinkingLevelMap, { off: null, xhigh: 'xhigh', max: 'max' });
+  assert.deepEqual(fable51.compat, {
+    forceAdaptiveThinking: true,
+    supportsStrictTools: true,
+  });
 
   const fable = provider.models.find((model) => model.id === 'claude-fable-5');
   assert.equal(fable.name, 'Claude Fable 5 (Meridian)');
@@ -108,18 +125,20 @@ test('provider model catalog matches current upstream Meridian models', async ()
 test('Fable keeps the full pi orchestration system prompt', async () => {
   const pi = await registerWithEnv();
   const beforeProviderRequest = pi.handlers.get('before_provider_request');
-  const payload = { system: 'original payload' };
-  const result = beforeProviderRequest(
-    { payload },
-    {
-      model: { provider: 'meridian', id: 'claude-fable-5' },
-      cwd: '/repo',
-      getSystemPrompt: () => 'full Fable orchestration contract',
-    },
-  );
+  for (const modelId of ['claude-fable-5', 'claude-fable-5-1']) {
+    const payload = { system: 'original payload' };
+    const result = beforeProviderRequest(
+      { payload },
+      {
+        model: { provider: 'meridian', id: modelId },
+        cwd: '/repo',
+        getSystemPrompt: () => 'full Fable orchestration contract',
+      },
+    );
 
-  assert.equal(result, undefined);
-  assert.equal(payload.system, 'original payload');
+    assert.equal(result, undefined, modelId);
+    assert.equal(payload.system, 'original payload', modelId);
+  }
 });
 
 test('/meridian health sends configured auth and profile headers', async (t) => {
