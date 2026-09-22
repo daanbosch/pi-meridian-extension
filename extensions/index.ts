@@ -70,6 +70,10 @@ const ALWAYS_ON_ADAPTIVE_MODEL_IDS = new Set([
 	"claude-fable-5-1",
 	"claude-mythos-5-1",
 ]);
+const FULL_PROMPT_MODEL_IDS = new Set([
+	"claude-fable-5",
+	"claude-fable-5-1",
+]);
 const SAMPLING_UNSUPPORTED_MODEL_IDS = new Set([
 	"claude-sonnet-5",
 	"claude-opus-5",
@@ -789,9 +793,9 @@ export default function (pi: ExtensionAPI) {
 			ctx.model.id,
 			pi.getThinkingLevel(),
 		);
-		// Fable 5 accepts the full orchestration prompt. Keep serialized system
+		// Fable accepts the full orchestration prompt. Keep serialized system
 		// blocks and cache metadata without skipping request normalization.
-		if (ctx.model.id === "claude-fable-5") return payload;
+		if (FULL_PROMPT_MODEL_IDS.has(ctx.model.id)) return payload;
 
 		return {
 			...payload,

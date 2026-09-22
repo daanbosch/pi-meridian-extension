@@ -7,7 +7,7 @@ Without this extension, pi's default system prompt triggers an `"You're out of e
 ## What it does
 
 - **Registers a `meridian` provider** with the current Meridian Claude models, including Sonnet 5, Opus 5, Fable 5.1, and Mythos 5.1
-- **Rewrites the system prompt** to avoid the extra-usage error, preserving project context and working directory. Fable 5 keeps its full prompt.
+- **Rewrites the system prompt** to avoid the extra-usage error, preserving project context and working directory. Fable 5 and 5.1 keep their full prompts.
 - **Auto-starts Meridian** on session start if the local proxy isn't running. Remote URLs never trigger local startup.
 - **Adds commands**: `/meridian` (health check), `/meridian start`, `/meridian version`
 
@@ -94,7 +94,7 @@ pi --model meridian/claude-opus-5:high
 
 ## How the prompt rewrite works
 
-For `meridian/claude-fable-5`, the extension preserves the serialized system prompt, including orchestration instructions and cache metadata. Thinking and sampling normalization still applies.
+For `meridian/claude-fable-5` and `meridian/claude-fable-5-1`, the extension preserves the serialized system prompt, including orchestration instructions and cache metadata. Thinking and sampling normalization still applies.
 
 For other Meridian models, the extension hooks `before_provider_request` and replaces the full system prompt with a concise version that:
 
