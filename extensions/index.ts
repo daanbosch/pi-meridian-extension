@@ -36,6 +36,12 @@ const OPUS_COST = {
 	cacheRead: 0.5,
 	cacheWrite: 6.25,
 } as const;
+const OPUS_5_5_COST = {
+	input: 4,
+	output: 20,
+	cacheRead: 0.2,
+	cacheWrite: 5,
+} as const;
 const FABLE_COST = {
 	input: 10,
 	output: 50,
@@ -57,6 +63,7 @@ const HAIKU_COST = {
 const ADAPTIVE_MODEL_IDS = new Set([
 	"claude-sonnet-5",
 	"claude-sonnet-4-6",
+	"claude-opus-5-5",
 	"claude-opus-5",
 	"claude-opus-4-6",
 	"claude-opus-4-7",
@@ -76,6 +83,7 @@ const FULL_PROMPT_MODEL_IDS = new Set([
 ]);
 const SAMPLING_UNSUPPORTED_MODEL_IDS = new Set([
 	"claude-sonnet-5",
+	"claude-opus-5-5",
 	"claude-opus-5",
 	"claude-opus-4-7",
 	"claude-opus-4-8",
@@ -110,6 +118,16 @@ const MERIDIAN_MODELS: ProviderModelConfig[] = [
 		thinkingLevelMap: { xhigh: "max" },
 		input: DEFAULT_MODEL_INPUT,
 		cost: SONNET_COST,
+		contextWindow: DEFAULT_CONTEXT_WINDOW,
+		maxTokens: 128_000,
+	},
+	{
+		id: "claude-opus-5-5",
+		name: "Claude Opus 5.5 (Meridian)",
+		reasoning: true,
+		thinkingLevelMap: { off: null, xhigh: "xhigh" },
+		input: DEFAULT_MODEL_INPUT,
+		cost: OPUS_5_5_COST,
 		contextWindow: DEFAULT_CONTEXT_WINDOW,
 		maxTokens: 128_000,
 	},

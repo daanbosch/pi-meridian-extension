@@ -214,6 +214,12 @@ test("provider model catalog uses safe context defaults before refresh", async (
 		cacheRead: 0.5,
 		cacheWrite: 6.25,
 	};
+	const opus55Cost = {
+		input: 4,
+		output: 20,
+		cacheRead: 0.2,
+		cacheWrite: 5,
+	};
 	const fableCost = {
 		input: 10,
 		output: 50,
@@ -250,6 +256,16 @@ test("provider model catalog uses safe context defaults before refresh", async (
 			thinkingLevelMap: { xhigh: "max" },
 			input: ["text", "image"],
 			cost: sonnet46Cost,
+			contextWindow: 200_000,
+			maxTokens: 128_000,
+		},
+		{
+			id: "claude-opus-5-5",
+			name: "Claude Opus 5.5 (Meridian)",
+			reasoning: true,
+			thinkingLevelMap: { off: null, xhigh: "xhigh" },
+			input: ["text", "image"],
+			cost: opus55Cost,
 			contextWindow: 200_000,
 			maxTokens: 128_000,
 		},
