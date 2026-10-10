@@ -54,6 +54,14 @@ const HAIKU_COST = {
 	cacheRead: 0.1,
 	cacheWrite: 1.25,
 } as const;
+const HAIKU_5_5_COST = {
+	// Base prices for prompts up to 100k tokens. Claude Haiku 5.5 charges 5x
+	// above a 100k-token prompt; the flat cost model here cannot express that.
+	input: 0.1,
+	output: 0.5,
+	cacheRead: 0.01,
+	cacheWrite: 0.125,
+} as const;
 const ADAPTIVE_MODEL_IDS = new Set([
 	"claude-sonnet-5",
 	"claude-sonnet-4-6",
@@ -64,11 +72,13 @@ const ADAPTIVE_MODEL_IDS = new Set([
 	"claude-fable-5",
 	"claude-fable-5-1",
 	"claude-mythos-5-1",
+	"claude-haiku-5-5",
 ]);
 const ALWAYS_ON_ADAPTIVE_MODEL_IDS = new Set([
 	"claude-fable-5",
 	"claude-fable-5-1",
 	"claude-mythos-5-1",
+	"claude-haiku-5-5",
 ]);
 const FULL_PROMPT_MODEL_IDS = new Set([
 	"claude-fable-5",
@@ -191,6 +201,18 @@ const MERIDIAN_MODELS: ProviderModelConfig[] = [
 		reasoning: true,
 		input: DEFAULT_MODEL_INPUT,
 		cost: HAIKU_COST,
+		contextWindow: DEFAULT_CONTEXT_WINDOW,
+		maxTokens: 64_000,
+	},
+	{
+		id: "claude-haiku-5-5",
+		name: "Claude Haiku 5.5 (Meridian)",
+		reasoning: true,
+		// Haiku 5.5 reasoning cannot be disabled; `off` omits the thinking
+		// field so the model keeps its default adaptive effort.
+		thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+		input: DEFAULT_MODEL_INPUT,
+		cost: HAIKU_5_5_COST,
 		contextWindow: DEFAULT_CONTEXT_WINDOW,
 		maxTokens: 64_000,
 	},

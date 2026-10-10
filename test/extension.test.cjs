@@ -232,6 +232,12 @@ test("provider model catalog uses safe context defaults before refresh", async (
 		cacheRead: 0.1,
 		cacheWrite: 1.25,
 	};
+	const haiku55Cost = {
+		input: 0.1,
+		output: 0.5,
+		cacheRead: 0.01,
+		cacheWrite: 0.125,
+	};
 	assert.deepEqual(provider.models, [
 		{
 			id: "claude-sonnet-5",
@@ -323,6 +329,16 @@ test("provider model catalog uses safe context defaults before refresh", async (
 			reasoning: true,
 			input: ["text", "image"],
 			cost: haikuCost,
+			contextWindow: 200_000,
+			maxTokens: 64_000,
+		},
+		{
+			id: "claude-haiku-5-5",
+			name: "Claude Haiku 5.5 (Meridian)",
+			reasoning: true,
+			thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+			input: ["text", "image"],
+			cost: haiku55Cost,
 			contextWindow: 200_000,
 			maxTokens: 64_000,
 		},
