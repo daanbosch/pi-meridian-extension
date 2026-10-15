@@ -66,6 +66,7 @@ const ADAPTIVE_MODEL_IDS = new Set([
 	"claude-sonnet-5",
 	"claude-sonnet-4-6",
 	"claude-opus-5",
+	"claude-opus-5-5",
 	"claude-opus-4-6",
 	"claude-opus-4-7",
 	"claude-opus-4-8",
@@ -87,6 +88,7 @@ const FULL_PROMPT_MODEL_IDS = new Set([
 const SAMPLING_UNSUPPORTED_MODEL_IDS = new Set([
 	"claude-sonnet-5",
 	"claude-opus-5",
+	"claude-opus-5-5",
 	"claude-opus-4-7",
 	"claude-opus-4-8",
 	"claude-fable-5",
@@ -132,6 +134,17 @@ const MERIDIAN_MODELS: ProviderModelConfig[] = [
 		cost: OPUS_COST,
 		contextWindow: DEFAULT_CONTEXT_WINDOW,
 		maxTokens: 128_000,
+	},
+	{
+		id: "claude-opus-5-5",
+		name: "Claude Opus 5.5 (Meridian)",
+		reasoning: true,
+		thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+		input: DEFAULT_MODEL_INPUT,
+		cost: OPUS_COST,
+		contextWindow: DEFAULT_CONTEXT_WINDOW,
+		maxTokens: 128_000,
+		compat: { forceAdaptiveThinking: true, supportsTemperature: false },
 	},
 	{
 		id: "claude-opus-4-6",

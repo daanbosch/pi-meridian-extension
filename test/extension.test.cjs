@@ -269,6 +269,17 @@ test("provider model catalog uses safe context defaults before refresh", async (
 			contextWindow: 200_000,
 			maxTokens: 128_000,
 		},
+		{
+			id: "claude-opus-5-5",
+			name: "Claude Opus 5.5 (Meridian)",
+			reasoning: true,
+			thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+			input: ["text", "image"],
+			cost: opusCost,
+			contextWindow: 200_000,
+			maxTokens: 128_000,
+			compat: { forceAdaptiveThinking: true, supportsTemperature: false },
+		},
 		...[
 			["claude-opus-4-6", "Claude Opus 4.6 (Meridian)", { xhigh: "max" }],
 			[
@@ -360,6 +371,7 @@ test("model refresh applies Meridian's account-aware context windows", async (t)
 			json: async () => ({
 				data: [
 					{ id: "claude-opus-5", context_window: 1_000_000 },
+					{ id: "claude-opus-5-5", context_window: 1_000_000 },
 					{ id: "claude-fable-5", context_window: 1_000_000 },
 					{ id: "claude-sonnet-5", context_window: 200_000 },
 				],
@@ -380,6 +392,10 @@ test("model refresh applies Meridian's account-aware context windows", async (t)
 	assert.equal(requests[0].init.headers.Authorization, "Bearer meridian");
 	assert.equal(
 		models.find(({ id }) => id === "claude-opus-5").contextWindow,
+		1_000_000,
+	);
+	assert.equal(
+		models.find(({ id }) => id === "claude-opus-5-5").contextWindow,
 		1_000_000,
 	);
 	assert.equal(
@@ -561,6 +577,39 @@ test("Fable models preserve serialized orchestration instructions without bypass
 		assert.equal("thinking" in result, false);
 		assert.equal("system" in result, false);
 	}
+});
+
+test("claude-opus-5-5 requests drop sampling params and use adaptive thinking", async () => {
+	const pi = await registerWithEnv();
+	pi.thinkingLevel = "xhigh";
+	const beforeProviderRequest = pi.handlers.get("before_provider_request");
+
+	const payload = await beforeProviderRequest(
+		{
+			payload: {
+				model: "claude-opus-5-5",
+				messages: [{ role: "user", content: "hello" }],
+				thinking: {
+					type: "enabled",
+					budget_tokens: 16_384,
+					display: "summarized",
+				},
+				temperature: 0.7,
+			},
+		},
+		{
+			model: { provider: "meridian", id: "claude-opus-5-5" },
+			cwd: "/workspace",
+			getSystemPrompt: () => "original system prompt",
+		},
+	);
+
+	assert.deepEqual(payload.thinking, {
+		type: "adaptive",
+		display: "summarized",
+	});
+	assert.deepEqual(payload.output_config, { effort: "xhigh" });
+	assert.equal("temperature" in payload, false);
 });
 
 test("Claude 5 requests convert legacy budget thinking to adaptive", async () => {
