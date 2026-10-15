@@ -139,9 +139,11 @@ const MERIDIAN_MODELS: ProviderModelConfig[] = [
 		id: "claude-opus-5-5",
 		name: "Claude Opus 5.5 (Meridian)",
 		reasoning: true,
-		thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+		thinkingLevelMap: { off: null, xhigh: "xhigh" },
 		input: DEFAULT_MODEL_INPUT,
-		cost: OPUS_COST,
+		// Cost mirrors the operator's models.json entry for this exact model
+		// (4/20/0.2/5) — OPUS_COST is the generic opus-5 rate.
+		cost: { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
 		contextWindow: DEFAULT_CONTEXT_WINDOW,
 		maxTokens: 128_000,
 		compat: { forceAdaptiveThinking: true, supportsTemperature: false },
