@@ -66,6 +66,7 @@ const ADAPTIVE_MODEL_IDS = new Set([
 	"claude-sonnet-5",
 	"claude-sonnet-4-6",
 	"claude-opus-5",
+	"claude-opus-5-5",
 	"claude-opus-4-6",
 	"claude-opus-4-7",
 	"claude-opus-4-8",
@@ -87,6 +88,7 @@ const FULL_PROMPT_MODEL_IDS = new Set([
 const SAMPLING_UNSUPPORTED_MODEL_IDS = new Set([
 	"claude-sonnet-5",
 	"claude-opus-5",
+	"claude-opus-5-5",
 	"claude-opus-4-7",
 	"claude-opus-4-8",
 	"claude-fable-5",
@@ -132,6 +134,19 @@ const MERIDIAN_MODELS: ProviderModelConfig[] = [
 		cost: OPUS_COST,
 		contextWindow: DEFAULT_CONTEXT_WINDOW,
 		maxTokens: 128_000,
+	},
+	{
+		id: "claude-opus-5-5",
+		name: "Claude Opus 5.5 (Meridian)",
+		reasoning: true,
+		thinkingLevelMap: { off: null, xhigh: "xhigh" },
+		input: DEFAULT_MODEL_INPUT,
+		// Cost mirrors the operator's models.json entry for this exact model
+		// (4/20/0.2/5) — OPUS_COST is the generic opus-5 rate.
+		cost: { input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
+		contextWindow: DEFAULT_CONTEXT_WINDOW,
+		maxTokens: 128_000,
+		compat: { forceAdaptiveThinking: true, supportsTemperature: false },
 	},
 	{
 		id: "claude-opus-4-6",
