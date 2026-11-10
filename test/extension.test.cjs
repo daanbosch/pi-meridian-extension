@@ -330,6 +330,17 @@ test("provider model catalog uses safe context defaults before refresh", async (
 			compat: { forceAdaptiveThinking: true, supportsTemperature: false },
 		},
 		{
+			id: "claude-fable-5-2",
+			name: "Claude Fable 5.2 (Meridian)",
+			reasoning: true,
+			thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+			input: ["text", "image"],
+			cost: fable51Cost,
+			contextWindow: 200_000,
+			maxTokens: 128_000,
+			compat: { forceAdaptiveThinking: true, supportsTemperature: false },
+		},
+		{
 			id: "claude-mythos-5-1",
 			name: "Claude Mythos 5.1 (Meridian)",
 			reasoning: true,
@@ -410,6 +421,10 @@ test("model refresh applies Meridian's account-aware context windows", async (t)
 	);
 	assert.equal(
 		models.find(({ id }) => id === "claude-fable-5-1").contextWindow,
+		1_000_000,
+	);
+	assert.equal(
+		models.find(({ id }) => id === "claude-fable-5-2").contextWindow,
 		1_000_000,
 	);
 	assert.equal(
@@ -560,7 +575,7 @@ test("Fable models preserve serialized orchestration instructions without bypass
 	pi.thinkingLevel = "xhigh";
 	const hook = pi.handlers.get("before_provider_request");
 	const instructions = "Review the implementation before finishing. Use the provided orchestration tools.";
-	for (const modelId of ["claude-fable-5", "claude-fable-5-1"]) {
+	for (const modelId of ["claude-fable-5", "claude-fable-5-1", "claude-fable-5-2"]) {
 		for (const system of [instructions, [{ type: "text", text: instructions, cache_control: { type: "ephemeral" } }]]) {
 			const messages = [{ role: "user", content: "continue" }];
 			const payload = { system, messages, thinking: { type: "enabled", budget_tokens: 4096 }, temperature: 0.7 };
@@ -688,7 +703,7 @@ test("Fable-tier 5.1 models convert legacy thinking and strip unsupported sampli
 	pi.thinkingLevel = "xhigh";
 	const beforeProviderRequest = pi.handlers.get("before_provider_request");
 
-	for (const modelId of ["claude-fable-5-1", "claude-mythos-5-1"]) {
+	for (const modelId of ["claude-fable-5-1", "claude-fable-5-2", "claude-mythos-5-1"]) {
 		const payload = await beforeProviderRequest(
 			{
 				payload: {
@@ -725,7 +740,7 @@ test("always-on Fable-tier thinking ignores an explicit disabled mode", async ()
 	const pi = await registerWithEnv();
 	const beforeProviderRequest = pi.handlers.get("before_provider_request");
 
-	for (const modelId of ["claude-fable-5-1", "claude-mythos-5-1"]) {
+	for (const modelId of ["claude-fable-5-1", "claude-fable-5-2", "claude-mythos-5-1"]) {
 		const payload = await beforeProviderRequest(
 			{
 				payload: {
@@ -748,7 +763,7 @@ test("Fable-tier 5.1 models remove forced tool choices but preserve normal choic
 	const pi = await registerWithEnv();
 	const beforeProviderRequest = pi.handlers.get("before_provider_request");
 
-	for (const modelId of ["claude-fable-5-1", "claude-mythos-5-1"]) {
+	for (const modelId of ["claude-fable-5-1", "claude-fable-5-2", "claude-mythos-5-1"]) {
 		for (const toolChoice of [
 			"any",
 			"tool",

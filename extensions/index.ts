@@ -72,18 +72,21 @@ const ADAPTIVE_MODEL_IDS = new Set([
 	"claude-opus-4-8",
 	"claude-fable-5",
 	"claude-fable-5-1",
+	"claude-fable-5-2",
 	"claude-mythos-5-1",
 	"claude-haiku-5-5",
 ]);
 const ALWAYS_ON_ADAPTIVE_MODEL_IDS = new Set([
 	"claude-fable-5",
 	"claude-fable-5-1",
+	"claude-fable-5-2",
 	"claude-mythos-5-1",
 	"claude-haiku-5-5",
 ]);
 const FULL_PROMPT_MODEL_IDS = new Set([
 	"claude-fable-5",
 	"claude-fable-5-1",
+	"claude-fable-5-2",
 ]);
 const SAMPLING_UNSUPPORTED_MODEL_IDS = new Set([
 	"claude-sonnet-5",
@@ -93,10 +96,12 @@ const SAMPLING_UNSUPPORTED_MODEL_IDS = new Set([
 	"claude-opus-4-8",
 	"claude-fable-5",
 	"claude-fable-5-1",
+	"claude-fable-5-2",
 	"claude-mythos-5-1",
 ]);
 const FORCED_TOOL_CHOICE_UNSUPPORTED_MODEL_IDS = new Set([
 	"claude-fable-5-1",
+	"claude-fable-5-2",
 	"claude-mythos-5-1",
 ]);
 const MAX_EFFORT_MODEL_IDS = new Set([
@@ -200,6 +205,18 @@ const MERIDIAN_MODELS: ProviderModelConfig[] = [
 		compat: { forceAdaptiveThinking: true, supportsTemperature: false },
 	},
 	{
+		id: "claude-fable-5-2",
+		name: "Claude Fable 5.2 (Meridian)",
+		reasoning: true,
+		thinkingLevelMap: { off: null, xhigh: "xhigh", max: "max" },
+		input: DEFAULT_MODEL_INPUT,
+		// ponytail: 5.2 pricing unverified; reuses the 5.1 rate until confirmed.
+		cost: FABLE_5_1_COST,
+		contextWindow: DEFAULT_CONTEXT_WINDOW,
+		maxTokens: 128_000,
+		compat: { forceAdaptiveThinking: true, supportsTemperature: false },
+	},
+	{
 		id: "claude-mythos-5-1",
 		name: "Claude Mythos 5.1 (Meridian)",
 		reasoning: true,
@@ -242,6 +259,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 // context window until Meridian exposes them directly.
 const MODEL_CATALOG_FALLBACK_IDS: Record<string, string> = {
 	"claude-fable-5-1": "claude-fable-5",
+	"claude-fable-5-2": "claude-fable-5",
 	"claude-mythos-5-1": "claude-fable-5",
 };
 
